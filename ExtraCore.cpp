@@ -18,8 +18,9 @@ void ExtraCore::setPinIOstate(int pin, boolean state)
 	}
 }
 
-void ExtraCore::setOutputValue(int pin, boolean value)
+void ExtraCore::setDigitalOutput(int pin, boolean value)
 {
+	//bitClear(_configData.analog, pin);
 	if(value)
 	{
 		bitSet(_configData.output, pin);
@@ -30,17 +31,32 @@ void ExtraCore::setOutputValue(int pin, boolean value)
 	}
 }
 
-void ExtraCore::setInputValue(int pin, boolean value)
+void ExtraCore::setAnalogOutput(int pin, int value)
+{
+	//_configData.analogOutputs[pin] = pin;
+	//bitSet(_configData.analog, pin);
+}
+
+
+void ExtraCore::setDigitalReading(int pin, boolean value)
 {
 	if(value)
 	{
-		bitSet(_readingData.inputValues, pin);
+		bitSet(_readingData.digitalInputs, pin);
 	}
 	else
 	{
-		bitClear(_readingData.inputValues, pin);
+		bitClear(_readingData.digitalInputs, pin);
 	}
 }
+
+void ExtraCore::setAnalogReading(int pin, int value)
+{
+
+	_readingData.analogInputs[pin-A0] = value;
+	
+}
+
 
 //setTriStateValue(pin, TRUE) is
 //the same as setting pinMode(pin, OUTPUT); digitWrite(pin, HIGH);
@@ -68,11 +84,21 @@ boolean ExtraCore::getOutputValue(int pin)
 	return bitRead(_configData.output, pin);
 }
 
+boolean ExtraCore::getAnalogOutputSetting(int pin)
+{
+	//return bitRead(_configData.analog, pin);
+	return 0;
+}
+
 boolean ExtraCore::getTriStateValue(int pin)
 {
 	return bitRead(_configData.tri, pin);
 }
 
+int ExtraCore::getAnalogSetting(int pin)
+{
+	return _configData.analogOutputs[pin];
+}
 
 void ExtraCore::beginManager()
 {
@@ -118,4 +144,16 @@ boolean ExtraCore::getOutputSetting(int pin)
 boolean ExtraCore::getTriStateSetting(int pin)
 {
 	return bitRead(_configData.tri, pin);
+}
+
+boolean ExtraCore::getDigitalReading(int pin)
+{
+	return bitRead(_readingData.digitalInputs, pin);
+}
+
+int ExtraCore::getAnalogReading(int pin)
+{
+
+	return _readingData.analogInputs[pin-A0];
+	
 }
