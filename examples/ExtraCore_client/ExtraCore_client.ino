@@ -42,7 +42,7 @@ void loop()
 //  extraCore.ReadingsTransfer.receiveData();
   getDigitalData();
   getAnalogData();
-  extraCore.ReadingsTransfer.sendData(2);
+  extraCore.sendData();
   delay(10);//Sending data back too fast will block getting updates.
 }
 
