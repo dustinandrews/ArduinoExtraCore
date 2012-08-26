@@ -3,32 +3,18 @@ ArduinoExtraCore
 
 An Arduino Library that allows one client Arduino to be used as an I/O extender for a manager Arduino.
 
-
-Warning:
------
-
-This library is brand new and missing large chunks of functionality.
-
-Working:
+Features:
 --------
 - Two way i2c
 - remote set digital pin modes
 - remote set digital outputs.
-
-
-TODO:
------
-- Test Digital input works.
-- Create PWM output
-- Create Analog input
-
+- remote read digital and analog pins.
 
 
 Requirements
 ------------
 
 - Two arduino UNO's or compatible.
-- TimerOne library
 - EasyTransferI2C library
 - Wire library
 
@@ -43,5 +29,9 @@ Installation
 - load the manager sketch on the primary
 - load the client on the secondary
 
+Option setup for the test Sketch
+--------------------------------
+
+Make sure Pin 13 has an LED/resistor on each. Hook an LED/resistor to pin 6 for PWM output.
 
 
