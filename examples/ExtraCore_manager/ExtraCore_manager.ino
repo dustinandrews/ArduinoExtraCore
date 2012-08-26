@@ -30,20 +30,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 //Remote readings will only come in 100 times a second. You should assume they can
 //also get stale.
 
-/*************************
-* Keep this block intact *
-*************************/
 ExtraCore extraCore;
-void r(int numBytes)
-{
-  extraCore.ReadingsTransfer.receiveData();
-}
 
 void setup()
 {
-  Wire.onReceive(r);//keep this line
-  
-
   pinMode(13, OUTPUT); //set local pin13 to output.
   extraCore.beginManager();//begin Manager role. (beginClient() on remote)
   extraCore.setPinIOstate(6, OUTPUT);//set remote pin to output.
@@ -56,9 +46,8 @@ void setup()
 void loop()
 {
   delay(10);//Don't remove this delay. Sending updates too quickly will block data returning.
- 
-  //Setup PWM example.
-  //setup an LED with a resistor on Pin6 to + to and - to GND on the remote to see it.
+  // Setup PWM example.
+  // setup an LED with a resistor on Pin6 to + to and - to GND on the remote to see it.
   static byte pwm = 0;
   static byte amt = 17;
   if(pwm == 255)
@@ -72,19 +61,17 @@ void loop()
   pwm+=amt;
   extraCore.setAnalogOutput(6, pwm);//steps LED brightness up and down.
   
-  
-  ////Wire remote 13 to remote 2.
-  //Flash local 13 in time with remote 13.
+  // Wire remote 13 to remote 2.
+  // Flash local 13 in time with remote 13.
   digitalWrite(13, HIGH);
   extraCore.setDigitalOutput(13, HIGH);//Set the remote to the same as local.
   extraCore.sendConfig();//changes won't take effect until you sendConfig();
   delay(50);
   
-  //readings are updated 100 times a second automatically.
-  Serial.print("Remote D2 (expect 1): ");
-  Serial.println(extraCore.getDigitalReading(2));//Should be 1
-  Serial.print("Remote A0: ");
-  Serial.println(extraCore.getAnalogReading(A0));//expect random floating values.
+//  Serial.print("Remote D2 (expect 1): ");
+//  Serial.println(extraCore.getDigitalReading(2));//Should be 1
+//  Serial.print("Remote A0: ");
+//  Serial.println(extraCore.getAnalogReading(A0));//expect random floating values.
   delay(50);
   
   extraCore.setDigitalOutput(13, LOW);
@@ -92,8 +79,9 @@ void loop()
   digitalWrite(13, LOW);
   analogWrite(3, 0);
   delay(50);
-  Serial.print("Remote D2 (expect 0): ");
-  Serial.println(extraCore.getDigitalReading(2));
+//  Serial.print("Remote D2 (expect 0): ");
+//  Serial.println(extraCore.getDigitalReading(2));
   delay(40);
+
 }
 

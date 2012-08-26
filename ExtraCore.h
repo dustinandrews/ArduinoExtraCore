@@ -49,6 +49,7 @@ struct SEND_PIN_READINGS
 	unsigned int analogInputs[ANALOGPINCOUNT];
 };
 
+class ExtraCoreHelper;
 class ExtraCore 
 {
 public:
@@ -63,8 +64,6 @@ public:
 	boolean getOutputValue(int);
 	boolean getTriStateValue(int);
 	SEND_CONFIG_STRUCT getConfigData();
-    EasyTransferI2C ConfigTransfer;
-	EasyTransferI2C ReadingsTransfer;
 	void sendConfig();
 	void sendData();
 	boolean getConfigSetting(int pin);
@@ -75,14 +74,41 @@ public:
 	void beginManager();
 	void beginClient();
 	boolean getDigitalReading(int pin);
-	int getAnalogReading(int pin);	
+	int getAnalogReading(int pin);
+	boolean isDataNew();
 private:
+	ExtraCoreHelper* _helper;
 	void _begin();
-	SEND_CONFIG_STRUCT _configData;
-	SEND_PIN_READINGS _readingData;
 	const static byte _pwmMap[6];
+	boolean _newData;
 };
 
+class ExtraCoreHelper
+{
+public:
+	static ExtraCoreHelper* getInstance()
+	{	
+		if(_instance == NULL)
+		{
+			_instance = new ExtraCoreHelper;
+		}
+		return _instance;
+	}
+	
+	EasyTransferI2C ConfigTransfer;
+	EasyTransferI2C ReadingsTransfer;
+	SEND_CONFIG_STRUCT ConfigData;
+	SEND_PIN_READINGS ReadingData;
+	bool isManager;
+	bool isDataNew;
+	void *OnRequestData(void (*)(void) );	
+	void ReceiveData();
+private:
+	static ExtraCoreHelper* _instance;
+	ExtraCoreHelper(){}
+	ExtraCoreHelper(ExtraCoreHelper const&);
+	void operator=(ExtraCoreHelper const&);
+};
 
 
 #endif

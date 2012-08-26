@@ -19,13 +19,21 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 */
 
 #include <ExtraCore.h>
+//Variable Declarations
 const byte ExtraCore::_pwmMap[6] = {3,5,6,9,10,11};
-ExtraCore *classP;
-void (ExtraCore::*onRecieve_ptr)(int);
+
+/****************************
+* Callbacks for Wire Library *
+****************************/
+static void wireLibRecieveCallback(int numBytes)
+{
+	ExtraCoreHelper* helper = ExtraCoreHelper::getInstance();
+	helper->ReceiveData();
+}
 
 ExtraCore::ExtraCore()
 {
-	ExtraCore *classP = this;
+	_helper = ExtraCoreHelper::getInstance();
 }
 
 // Set a pin on the remote to 0 (input) or 1 (output)
@@ -33,11 +41,11 @@ void ExtraCore::setPinIOstate(int pin, boolean state)
 {
 	if(state)
 	{
-		bitSet(_configData.mode, pin);
+		bitSet(_helper->ConfigData.mode, pin);
 	}
 	else
 	{
-		bitClear(_configData.mode, pin);
+		bitClear(_helper->ConfigData.mode, pin);
 	}
 }
 
@@ -46,11 +54,11 @@ void ExtraCore::setDigitalOutput(int pin, boolean value)
 {
 	if(value)
 	{
-		bitSet(_configData.output, pin);
+		bitSet(_helper->ConfigData.output, pin);
 	}
 	else
 	{
-		bitClear(_configData.output, pin);
+		bitClear(_helper->ConfigData.output, pin);
 	}
 }
 
@@ -61,7 +69,7 @@ void ExtraCore::setAnalogOutput(int pin, int value)
 	{
 		if(pin == _pwmMap[i])
 		{
-			_configData.analogOutputs[i] = value;
+			_helper->ConfigData.analogOutputs[i] = value;
 		}
 	}	
 }
@@ -71,18 +79,18 @@ void ExtraCore::setDigitalReading(int pin, boolean value)
 {
 	if(value)
 	{
-		bitSet(_readingData.digitalInputs, pin);
+		bitSet(_helper->ReadingData.digitalInputs, pin);
 	}
 	else
 	{
-		bitClear(_readingData.digitalInputs, pin);
+		bitClear(_helper->ReadingData.digitalInputs, pin);
 	}
 }
 
 //Set a reading from the remote to send back to the manager.
 void ExtraCore::setAnalogReading(int pin, int value)
 {
-	_readingData.analogInputs[pin - A0] = value;	
+	_helper->ReadingData.analogInputs[pin - A0] = value;	
 }
 
 
@@ -93,31 +101,31 @@ void ExtraCore::setTriStateValue(int pin, boolean value)
 {
 	if(value)
 	{
-		bitSet(_configData.tri, pin);
-		bitSet(_configData.mode, pin);
+		bitSet(_helper->ConfigData.tri, pin);
+		bitSet(_helper->ConfigData.mode, pin);
 	}
 	else
 	{
-		bitClear(_configData.tri, pin);
+		bitClear(_helper->ConfigData.tri, pin);
 	}
 }
 
 //Read the desired state of the pin
 boolean ExtraCore::getPinIOstate(int pin)
 {
-	return bitRead(_configData.mode, pin);
+	return bitRead(_helper->ConfigData.mode, pin);
 }
 
 //Read the desired output value of the pin.
 boolean ExtraCore::getOutputValue(int pin)
 {
-	return bitRead(_configData.output, pin);
+	return bitRead(_helper->ConfigData.output, pin);
 }
 
 //Get the desired pullup state of the pin
 boolean ExtraCore::getTriStateValue(int pin)
 {
-	return bitRead(_configData.tri, pin);
+	return bitRead(_helper->ConfigData.tri, pin);
 }
 
 //Get the desired PWM value of the pin.
@@ -127,7 +135,7 @@ int ExtraCore::getAnalogSetting(int pin)
 	{
 		if(pin == _pwmMap[i])
 		{
-			return _configData.analogOutputs[i];
+			return _helper->ConfigData.analogOutputs[i];
 		}
 	}
 	return 0;
@@ -136,65 +144,91 @@ int ExtraCore::getAnalogSetting(int pin)
 //Begin running as a manager.
 void ExtraCore::beginManager()
 {
-    //onRecieve_ptr = &ExtraCore::receiveReading;
 	Wire.begin(I2C_MANAGER_ADDRESS);
+	_helper->isManager = 1;
 	_begin();
 }
 
 //Begin running as a client
 void ExtraCore::beginClient()
 {
-	//onRecieve_ptr = &ExtraCore::receiveConfig;
 	Wire.begin(I2C_CLIENT_ADDRESS);
+	_helper->isManager = 0;
 	_begin();
 }
 
 void ExtraCore::_begin()
 {
-	//Wire.onReceive(receive);
-	ConfigTransfer.begin(details(_configData), &Wire);
-	ReadingsTransfer.begin(details(_readingData), &Wire);
+	Wire.onReceive(wireLibRecieveCallback);
+	_helper->ConfigTransfer.begin(details(_helper->ConfigData), &Wire);
+	_helper->ReadingsTransfer.begin(details(_helper->ReadingData), &Wire);
 }
 
 //Send the desired pin state to the remote.
 void ExtraCore::sendConfig()
 {
-	ConfigTransfer.sendData(I2C_CLIENT_ADDRESS);
+	_helper->ConfigTransfer.sendData(I2C_CLIENT_ADDRESS);
 }
 
 //Send readings back to the manager.
 void ExtraCore::sendData()
 {
-	ReadingsTransfer.sendData(I2C_MANAGER_ADDRESS);
+	_helper->ReadingsTransfer.sendData(I2C_MANAGER_ADDRESS);
 }
-
 
 //Get the desired state of a pin
 boolean ExtraCore::getConfigSetting(int pin)
 {
-	return bitRead(_configData.mode, pin);
+	return bitRead(_helper->ConfigData.mode, pin);
 }
 
 //Get the desired output setting of a pin 
 boolean ExtraCore::getOutputSetting(int pin)
 {
-	return bitRead(_configData.output, pin);
+	return bitRead(_helper->ConfigData.output, pin);
 }
 
 //Get the desired tri-state setting
 boolean ExtraCore::getTriStateSetting(int pin)
 {
-	return bitRead(_configData.tri, pin);
+	return bitRead(_helper->ConfigData.tri, pin);
 }
 
 //Get the reading from a digital pin.
 boolean ExtraCore::getDigitalReading(int pin)
 {
-	return bitRead(_readingData.digitalInputs, pin);
+	return bitRead(_helper->ReadingData.digitalInputs, pin);
 }
 
 //Get the analog reading from a pin
 int ExtraCore::getAnalogReading(int pin)
 {
-	return _readingData.analogInputs[pin - A0];	
+	return _helper->ReadingData.analogInputs[pin - A0];	
+}
+
+boolean ExtraCore::isDataNew()
+{
+	boolean b = _helper->isDataNew;
+	_helper->isDataNew = 0;
+	return b;
+}
+
+
+/**********************************
+* ExtraCoreHelper class functions *
+**********************************/
+ExtraCoreHelper* ExtraCoreHelper::_instance;
+void ExtraCoreHelper::ReceiveData()
+{
+	if(isManager)
+	{
+		Serial.println("ReadingsTransfer.receiveData();");
+		ReadingsTransfer.receiveData();		
+	}
+	else
+	{
+		Serial.println("ConfigTransfer.receiveData();");
+		ConfigTransfer.receiveData();
+	}
+	isDataNew = 1;
 }

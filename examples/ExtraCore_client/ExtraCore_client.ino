@@ -22,16 +22,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <Wire.h>
 #include <EasyTransferI2C.h>
 
-//This Client example is meant to be used as-is with the manager example.
-//You shouldn't find a need to change this sketch. Though, if you find a way
-//to improve it please do submit a patch.
-
-//create object
+//This Client example is meant to be used as-is with the manager.
 ExtraCore extraCore;
 
 void setup()
 {
-  Wire.onReceive(r);
   Serial.begin(9600);  
   extraCore.beginClient();
   Serial.println("client ready");
@@ -39,18 +34,15 @@ void setup()
 
 void loop() 
 {
-//  extraCore.ReadingsTransfer.receiveData();
-  getDigitalData();
-  getAnalogData();
-  extraCore.sendData();
+  if(extraCore.isDataNew())
+  {
+    setPinModes();
+    setIOstates();
+  }
+  //getDigitalData();
+  //getAnalogData();
+  //extraCore.sendData();
   delay(10);//Sending data back too fast will block getting updates.
-}
-
-void r(int numBytes)
-{
-  extraCore.ConfigTransfer.receiveData();
-  setPinModes();
-  setIOstates();
 }
 
 void setPinModes()
