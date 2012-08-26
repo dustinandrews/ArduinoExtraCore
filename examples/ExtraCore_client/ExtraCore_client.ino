@@ -39,10 +39,17 @@ void loop()
     setPinModes();
     setIOstates();
   }
-  //getDigitalData();
-  //getAnalogData();
-  //extraCore.sendData();
-  delay(10);//Sending data back too fast will block getting updates.
+  delay(1);
+  static long lastUpdate = 0;
+  if(lastUpdate + 40 < millis())
+  {  
+    //Serial.println("sendData");
+    lastUpdate = millis();
+    getDigitalData();
+    getAnalogData();
+    extraCore.sendData();
+    delay(1);
+  }
 }
 
 void setPinModes()

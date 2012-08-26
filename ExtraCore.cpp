@@ -222,12 +222,12 @@ void ExtraCoreHelper::ReceiveData()
 {
 	if(isManager)
 	{
-		Serial.println("ReadingsTransfer.receiveData();");
-		ReadingsTransfer.receiveData();		
+		//Serial.println("ReadingsTransfer.receiveData();");
+		ReadingsTransfer.receiveData();
 	}
 	else
 	{
-		Serial.println("ConfigTransfer.receiveData();");
+		//Serial.println("ConfigTransfer.receiveData();");
 		ConfigTransfer.receiveData();
 	}
 	isDataNew = 1;
