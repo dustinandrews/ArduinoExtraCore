@@ -7,8 +7,9 @@ Features:
 --------
 - Two way i2c
 - remote set digital pin modes
-- remote set digital outputs.
-- remote read digital and analog pins.
+- remote set digital outputs
+- remote set PWM outputs
+- remote read digital and analog pins
 
 
 Requirements
