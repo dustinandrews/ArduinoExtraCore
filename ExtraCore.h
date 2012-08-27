@@ -54,27 +54,27 @@ class ExtraCore
 {
 public:
 	ExtraCore();
+
+	void beginManager();
 	void setPinIOstate(int, boolean);
 	void setDigitalOutput(int, boolean);
 	void setAnalogOutput(int, int);
 	void setTriStateValue(int, boolean);
-	void setDigitalReading(int pin, boolean value);
-	void setAnalogReading(int pin, int value);
+	boolean getDigitalReading(int pin);
+	int getAnalogReading(int pin);
+	
+	
+	void beginClient();
 	boolean getPinIOstate(int);
 	boolean getOutputValue(int);
 	boolean getTriStateValue(int);
-	SEND_CONFIG_STRUCT getConfigData();
+	int getAnalogValue(int pin);
+	void setDigitalReading(int pin, boolean value);
+	void setAnalogReading(int pin, int value);
+	
 	void sendConfig();
 	void sendData();
-	boolean getConfigSetting(int pin);
-	boolean getOutputSetting(int pin);
-	boolean getAnalogOutputSetting(int pin);
-	boolean getTriStateSetting(int pin);
-	int getAnalogSetting(int pin);
-	void beginManager();
-	void beginClient();
-	boolean getDigitalReading(int pin);
-	int getAnalogReading(int pin);
+
 	boolean isDataNew();
 private:
 	ExtraCoreHelper* _helper;

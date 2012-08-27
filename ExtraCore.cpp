@@ -129,7 +129,7 @@ boolean ExtraCore::getTriStateValue(int pin)
 }
 
 //Get the desired PWM value of the pin.
-int ExtraCore::getAnalogSetting(int pin)
+int ExtraCore::getAnalogValue(int pin)
 {
 	for(int i = 0; i < 6; i++)
 	{
@@ -174,24 +174,6 @@ void ExtraCore::sendConfig()
 void ExtraCore::sendData()
 {
 	_helper->ReadingsTransfer.sendData(I2C_MANAGER_ADDRESS);
-}
-
-//Get the desired state of a pin
-boolean ExtraCore::getConfigSetting(int pin)
-{
-	return bitRead(_helper->ConfigData.mode, pin);
-}
-
-//Get the desired output setting of a pin 
-boolean ExtraCore::getOutputSetting(int pin)
-{
-	return bitRead(_helper->ConfigData.output, pin);
-}
-
-//Get the desired tri-state setting
-boolean ExtraCore::getTriStateSetting(int pin)
-{
-	return bitRead(_helper->ConfigData.tri, pin);
 }
 
 //Get the reading from a digital pin.
