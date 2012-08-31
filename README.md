@@ -30,13 +30,13 @@ Installation
 - Connect pin A4 on both Arduinos together
 - Connect pin A5 on both Arduinos together
 - Connect GND on both Arduinos together
-- load the manager sketch on the primary
-- load the client on the secondary
+- load the manager sketch from examples on the primary
+- load the client sketch from examples on the secondary
 
-Option setup for the test Sketch
+Optional setup for the test sketch
 --------------------------------
 
-Make sure Pin 13 has an LED/resistor on each. Hook an LED/resistor to pin 6 for PWM output.
+Make sure Pin 13 has an LED/resistor on each board. Hook an LED/resistor to pin 6 for PWM output on the client.
 
 Reference
 ---------
