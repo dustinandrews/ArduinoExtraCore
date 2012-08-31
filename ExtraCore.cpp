@@ -21,6 +21,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <ExtraCore.h>
 //Variable Declarations
 const byte ExtraCore::_pwmMap[6] = {3,5,6,9,10,11};
+void (*ExtraCoreHelper::user_onReceive)(void);
 
 /****************************
 * Callbacks for Wire Library *
@@ -134,7 +135,7 @@ int ExtraCore::getAnalogValue(int pin)
 	for(int i = 0; i < 6; i++)
 	{
 		if(pin == _pwmMap[i])
-		{
+		{			
 			return _helper->ConfigData.analogOutputs[i];
 		}
 	}
@@ -188,13 +189,10 @@ int ExtraCore::getAnalogReading(int pin)
 	return _helper->ReadingData.analogInputs[pin - A0];	
 }
 
-boolean ExtraCore::isDataNew()
+void ExtraCore::onReceive( void (*function)(void) )
 {
-	boolean b = _helper->isDataNew;
-	_helper->isDataNew = 0;
-	return b;
+  _helper->user_onReceive = function;
 }
-
 
 /**********************************
 * ExtraCoreHelper class functions *
@@ -204,13 +202,24 @@ void ExtraCoreHelper::ReceiveData()
 {
 	if(isManager)
 	{
-		//Serial.println("ReadingsTransfer.receiveData();");
 		ReadingsTransfer.receiveData();
 	}
 	else
 	{
-		//Serial.println("ConfigTransfer.receiveData();");
 		ConfigTransfer.receiveData();
 	}
-	isDataNew = 1;
+	
+	if(!user_onReceive){return;}
+	user_onReceive();
+}
+
+ExtraCoreHelper::ExtraCoreHelper()
+{
+	ConfigData.mode = 0;
+	ConfigData.tri = 0;
+	ConfigData.output = 0;
+	memset(ConfigData.analogOutputs,0,sizeof(ConfigData.analogOutputs));
+	
+	ReadingData.digitalInputs =0;
+	memset(ReadingData.analogInputs,0,sizeof(ReadingData.analogInputs));
 }

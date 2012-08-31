@@ -62,7 +62,7 @@ public:
 	void setTriStateValue(int, boolean);
 	boolean getDigitalReading(int pin);
 	int getAnalogReading(int pin);
-	
+	void sendConfig();
 	
 	void beginClient();
 	boolean getPinIOstate(int);
@@ -71,16 +71,14 @@ public:
 	int getAnalogValue(int pin);
 	void setDigitalReading(int pin, boolean value);
 	void setAnalogReading(int pin, int value);
-	
-	void sendConfig();
 	void sendData();
-
-	boolean isDataNew();
+	void onReceive( void (*)(void) );
 private:
+
 	ExtraCoreHelper* _helper;
 	void _begin();
 	const static byte _pwmMap[6];
-	boolean _newData;
+	boolean _newData;	
 };
 
 class ExtraCoreHelper
@@ -94,7 +92,6 @@ public:
 		}
 		return _instance;
 	}
-	
 	EasyTransferI2C ConfigTransfer;
 	EasyTransferI2C ReadingsTransfer;
 	SEND_CONFIG_STRUCT ConfigData;
@@ -103,11 +100,13 @@ public:
 	bool isDataNew;
 	void *OnRequestData(void (*)(void) );	
 	void ReceiveData();
+	static void (*user_onReceive)(void);
 private:
 	static ExtraCoreHelper* _instance;
-	ExtraCoreHelper(){}
+	ExtraCoreHelper();
 	ExtraCoreHelper(ExtraCoreHelper const&);
 	void operator=(ExtraCoreHelper const&);
+    
 };
 
 
