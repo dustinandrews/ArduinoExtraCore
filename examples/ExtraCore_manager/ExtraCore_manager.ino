@@ -76,8 +76,8 @@ void loop()
   extraCore.sendConfig();
   digitalWrite(13, LOW);
   delay(50);
-  Serial.println(extraCore.getDigitalReading(2));
-  delay(40);
+//Serial.println(extraCore.getDigitalReading(2));
+  delay(50);
 
 }
 
